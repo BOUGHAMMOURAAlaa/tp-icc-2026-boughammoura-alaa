@@ -76,7 +76,8 @@ Le rôle APP :
 
 3. Test de l'application
 
-À la fin du déploiement, une requête HTTP est exécutée automatiquement via Ansible pour vérifier que l'application fonctionne. L'application doit afficher dans les logs : hello Alaa Boughammoura.
+À la fin du déploiement, une requête HTTP est exécutée automatiquement via Ansible pour vérifier que L'application doit retourner la réponse suivante :   hello Alaa Boughammoura
+
 Déploiement du projet
 
 Pour lancer l'environnement, placez-vous dans le dossier terraform et lancez les commandes :
@@ -96,7 +97,7 @@ Le fichier terraform.tfvars.example permet de définir les variables utilisées 
 Terraform
 
 # Configuration Proxmox
-proxmox_endpoint = "[https://192.168.100.100:8006/](https://192.168.100.100:8006/)"
+proxmox_endpoint = "https://192.168.100.100:8006/api2/json"
 proxmox_user     = "terraform@pme"
 proxmox_password = "CHANGEME"  # Remplacer par le vrai mot de passe
 
