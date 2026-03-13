@@ -1,0 +1,8 @@
+#SPDX-License-Identifier: MIT-0
+---
+# vars file for bdd
+bdd_packages:
+  - postgresql
+  - postgresql-contrib
+  - python3-psycopg2 
+  - acl

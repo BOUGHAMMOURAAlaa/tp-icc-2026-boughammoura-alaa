@@ -1,0 +1,12 @@
+---
+- name: Configuration du serveur de Base de Données
+  hosts: bdd
+  become: yes
+  roles:
+    - bdd
+
+- name: Configuration du serveur d'Application
+  hosts: app
+  become: yes
+  roles:
+    - app

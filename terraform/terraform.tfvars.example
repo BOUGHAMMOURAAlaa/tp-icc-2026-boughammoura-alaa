@@ -1,0 +1,31 @@
+# Fichier d'exemple 
+
+
+# --- Configuration Proxmox ---
+target_node         = "proxmox2"
+datastore_id        = "local-lvm"
+image_file_id       = "local:iso/jammy-server-cloudimg-amd64.img"
+reseau              = "vmbr0"
+vm_gateway          = "X.X.X.X"          
+vm_user             = "alaa"
+vm_password         = "CHANGEME"         
+ssh_public_key_path = "~/.ssh/id_rsa.pub"
+
+# --- Configuration de la base de données ---
+db_password         = "CHANGEME"         # Remplacer par le mot de passe souhaité pour PostgreSQL
+
+# --- Configuration de la VM BDD ---
+bdd_vm_id     = 121
+bdd_vm_name   = "cytech-alaa-bdd"
+bdd_ram       = 2048
+bdd_cpu       = 1
+bdd_disk_size = 20
+bdd_vm_ip     = "X.X.X.X/24"             
+
+# --- Configuration de la VM APP ---
+app_vm_id     = 120
+app_vm_name   = "cytech-alaa-app"
+app_ram       = 1024
+app_cpu       = 1
+app_disk_size = 20
+app_vm_ip     = "X.X.X.X/24"            

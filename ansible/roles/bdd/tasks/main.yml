@@ -1,0 +1,90 @@
+---
+- name: Installer PostgreSQL et ses dépendances 
+  apt:
+    name: "{{ bdd_packages }}"
+    state: present
+    update_cache: yes
+  register: apt_result
+  until: apt_result is success
+  retries: "{{ apt_retries | default(15) }}"
+  delay: "{{ apt_delay | default(20) }}"
+
+
+- name: S'assurer que le service PostgreSQL est démarré
+  service:
+    name: postgresql
+    state: started
+    enabled: yes
+
+
+- name: Créer le groupe de la base de données
+  become_user: postgres   # Exécuter la commande en tant que superuser PostgreSQL
+  community.postgresql.postgresql_user:
+    name: "{{ db_group }}"     # Nom du groupe
+    role_attr_flags: NOLOGIN   # Groupe sans possibilité de connexion
+
+
+- name: Créer l'utilisateur de la base de données
+  become_user: postgres
+  community.postgresql.postgresql_user:
+    name: "{{ db_user }}"           # Utilisateur de la base de données
+    password: "{{ db_password }}"    # Mot de passe de connexion
+
+
+- name: Ajouter l'utilisateur au groupe de la base de données
+  become_user: postgres
+  community.postgresql.postgresql_membership:
+    group: "{{ db_group }}"    # Groupe PostgreSQL
+    target_roles: "{{ db_user }}"    # Utilisateur à ajouter au groupe
+    state: present
+
+
+- name: Créer la base de données et assigner le propriétaire
+  become_user: postgres
+  community.postgresql.postgresql_db:
+    name: "{{ db_name }}"
+    owner: "{{ db_user }}"
+
+
+- name: Exécuter le script SQL pour créer la table et insérer le nom
+  become_user: postgres
+  community.postgresql.postgresql_query:
+    db: "{{ db_name }}"
+    query: |
+      CREATE TABLE IF NOT EXISTS cytech_usr (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(100)
+      );
+      ALTER TABLE cytech_usr OWNER TO {{ db_user }};
+      TRUNCATE TABLE cytech_usr;
+      INSERT INTO cytech_usr (name) VALUES ('Alaa Boughammoura');
+
+
+- name: Configurer PostgreSQL pour écouter sur les interfaces réseau
+  lineinfile:
+    path: /etc/postgresql/{{ pg_version }}/main/postgresql.conf
+    regexp: '^#?listen_addresses\s*='
+    line: "listen_addresses = '*'"      # Permet l'accès depuis d'autres machines
+  notify: Restart PostgreSQL
+
+
+- name: Autoriser localhost dans pg_hba.conf
+  community.postgresql.postgresql_pg_hba:
+    dest: /etc/postgresql/{{ pg_version }}/main/pg_hba.conf
+    contype: host
+    databases: "{{ db_name }}"
+    users: "{{ db_user }}"
+    source: 127.0.0.1/32      # Accès local
+    method: md5               # Authentification par mot de passe
+  notify: Restart PostgreSQL
+
+
+- name: Autoriser la machine APP dans pg_hba.conf
+  community.postgresql.postgresql_pg_hba:
+    dest: /etc/postgresql/{{ pg_version }}/main/pg_hba.conf
+    contype: host
+    databases: "{{ db_name }}"
+    users: "{{ db_user }}"
+    source: "{{ groups['app'][0] }}/32"    # Autorise la VM APP à se connecter
+    method: md5
+  notify: Restart PostgreSQL

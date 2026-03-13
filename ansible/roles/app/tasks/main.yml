@@ -1,0 +1,78 @@
+---
+- name: Installer les dépendances système pour Flask et le venv
+  apt:
+    name: "{{ app_packages }}"  # Liste des packages système définie dans vars/main.yml
+    state: present
+    update_cache: yes
+
+- name: Créer le répertoire de l'application
+  file:
+    path: "{{ app_dir }}"    # Répertoire où sera déployée l'application
+    state: directory
+    owner: "{{ app_user }}"       # Propriétaire du répertoire
+    group: "{{ app_user }}"       # Groupe du répertoire
+    mode: '0755'                  # Permissions du répertoire
+
+- name: Créer l'environnement virtuel et installer Flask/Psycopg2
+  pip:
+    name:
+      - flask
+      - psycopg2
+    virtualenv: "{{ app_dir }}/venv"     # Emplacement de l'environnement virtuel
+    virtualenv_command: python3 -m venv
+
+- name: Déployer le fichier de l'application Flask avec Jinja2
+  template:
+    src: app.py.j2        # Template Jinja2 pour l'application Flask
+    dest: "{{ app_dir }}/app.py"
+    owner: "{{ app_user }}"
+    group: "{{ app_user }}"
+
+- name: Créer le service systemd pour Flask
+  copy:
+    dest: /etc/systemd/system/{{ app_name }}.service
+    content: |
+      [Unit]
+      Description=Flask Application {{ app_user }}
+      # Démarre après la mise en place du réseau
+      After=network.target
+
+      [Service]  
+      # Exécute le service sous l'utilisateur défini
+      User={{ app_user }}
+      # Répertoire de travail de l'application
+      WorkingDirectory={{ app_dir }}
+      # Commande pour lancer l'application Flask
+      ExecStart={{ app_dir }}/venv/bin/python app.py
+      # Redémarre l'application en cas de crash
+      Restart=always
+
+      [Install]
+      # Active le service au démarrage du système
+      WantedBy=multi-user.target
+    owner: root
+    group: root
+
+- name: Recharger systemd, activer et démarrer l'application
+  systemd:
+    daemon_reload: yes
+    name: "{{ app_name }}"
+    enabled: yes
+    state: restarted
+
+- name: Attendre que le port 8080 soit ouvert
+  wait_for:
+    port: 8080       # Vérifie que l'application écoute sur ce port
+    delay: 2         # Délai avant le premier test
+    timeout: 15      # Temps maximum d'attente
+
+
+- name: Récupérer la réponse de l'application (Test API)
+  uri:
+    url: http://127.0.0.1:8080/      # Requête locale vers l'API Flask
+    return_content: yes
+  register: api_result               # Stocke la réponse dans la variable api_result
+
+- name: Afficher le résultat du test dans un debug Ansible
+  debug:
+    msg: "L'API a répondu : {{ api_result.content }}"

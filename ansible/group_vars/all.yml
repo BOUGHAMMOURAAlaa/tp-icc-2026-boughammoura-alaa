@@ -1,0 +1,12 @@
+---
+db_name: "cytech"
+db_user: "cytech_usr"
+db_group: "cytech_grp"
+app_dir: "/opt/cytech_app"
+app_user: "alaa"
+app_name: "cytech_app"
+pg_version: "14"
+
+# Configuration des tentatives d'installation APT (gestion du lock Ubuntu)
+apt_retries: 15
+apt_delay: 20

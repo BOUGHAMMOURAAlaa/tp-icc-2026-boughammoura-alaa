@@ -1,0 +1,7 @@
+#SPDX-License-Identifier: MIT-0
+---
+# vars file for app
+app_packages:
+  - python3-venv    # Pour créer des environnements virtuels Python
+  - python3-pip     # Pour installer les packages Python dans le venv
+  - libpq-dev       # Bibliothèque PostgreSQL nécessaire pour psycopg2

@@ -1,0 +1,6 @@
+---
+- name: Restart PostgreSQL
+  become: yes        # Exécute la commande avec les privilèges root
+  service:
+    name: postgresql     # Service PostgreSQL à contrôler
+    state: restarted     # Redémarre le service pour appliquer les changements 

@@ -1,0 +1,10 @@
+# Déclaration des providers Terraform
+terraform {
+  required_providers {
+    proxmox = {
+      source  = "bpg/proxmox"
+      version = ">= 0.98.1"
+    }
+  }
+
+}

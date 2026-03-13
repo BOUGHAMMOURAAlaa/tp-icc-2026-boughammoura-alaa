@@ -1,0 +1,25 @@
+from flask import Flask
+import psycopg2
+
+app = Flask(__name__)
+
+@app.route('/')
+def get_name():
+    try:
+        conn = psycopg2.connect(
+            host="{{ groups['bdd'][0] }}",
+            database="{{ db_name }}",
+            user="{{ db_user }}",
+            password="{{ db_password }}"
+        )
+        cur = conn.cursor()
+        cur.execute("SELECT name FROM cytech_usr LIMIT 1;")
+        name = cur.fetchone()[0]
+        cur.close()
+        conn.close()
+        return f"hello {name}"
+    except Exception as e:
+        return f"Erreur de connexion : {str(e)}"
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=8080)
