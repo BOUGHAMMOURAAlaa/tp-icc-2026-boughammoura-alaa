@@ -37,66 +37,59 @@ Le projet est structuré en deux parties principales :
 │       ├── app/
 │       └── bdd/
 └── README.md
+```
 
-Fonctionnement du projet
+## Fonctionnement du projet
 
 Le déploiement se déroule en plusieurs étapes :
-1. Création de l'infrastructure avec Terraform
 
+### 1. Création de l'infrastructure avec Terraform
 Terraform crée deux machines virtuelles :
+- **VM BDD :** Héberge la base de données.
+- **VM APP :** Héberge l'application Python.
 
-    VM BDD : Héberge la base de données.
+*Note : La VM BDD est créée avant la VM APP afin que l'application puisse se connecter à la base de données dès son lancement.*
 
-    VM APP : Héberge l'application Python.
-
-Note : La VM BDD est créée avant la VM APP afin que l'application puisse se connecter à la base de données dès son lancement.
-2. Configuration des serveurs avec Ansible
-
+### 2. Configuration des serveurs avec Ansible
 Une fois les machines créées, Ansible configure automatiquement les serveurs (en respectant l'idempotence et sans utiliser les modules shell ou command) :
 
-Le rôle BDD :
+**Le rôle BDD :**
+- Installe PostgreSQL.
+- Crée un groupe et l'utilisateur `cytech_usr`.
+- Crée la base de données `cytech`.
+- Initialise la base avec une table et y insère la valeur attendue.
 
-    Installe PostgreSQL.
+**Le rôle APP :**
+- Installe les dépendances Python.
+- Crée un environnement virtuel (venv).
+- Déploie l'application Flask.
+- Crée un service systemd pour lancer l'application en arrière-plan.
 
-    Crée un groupe et l'utilisateur cytech_usr.
+### 3. Test de l'application
+À la fin du déploiement, une requête HTTP est exécutée automatiquement via Ansible pour vérifier que l'application fonctionne. L'application doit retourner la réponse suivante : `hello Alaa Boughammoura`.
 
-    Crée la base de données cytech.
+## Déploiement du projet
 
-    Initialise la base avec une table et y insère la valeur attendue.
+Pour lancer l'environnement, placez-vous dans le dossier `terraform` et lancez les commandes :
 
-Le rôle APP :
-
-    Installe les dépendances Python.
-
-    Crée un environnement virtuel (venv).
-
-    Déploie l'application Flask.
-
-    Crée un service systemd pour lancer l'application en arrière-plan.
-
-3. Test de l'application
-
-À la fin du déploiement, une requête HTTP est exécutée automatiquement via Ansible pour vérifier que l'application fonctionne. L'application doit retourner la réponse suivante : hello Alaa Boughammoura.
-Déploiement du projet
-
-Pour lancer l'environnement, placez-vous dans le dossier terraform et lancez les commandes :
-Bash
-
+```bash
 terraform init
 terraform apply
+```
 
 Une fois terminé, vous pourrez accéder à l'application depuis un navigateur :
-Plaintext
 
+```text
 http://<IP_APP>:8080
+```
 
-Exemple de configuration (terraform.tfvars.example)
+## Exemple de configuration (terraform.tfvars.example)
 
-Le fichier terraform.tfvars.example permet de définir les variables utilisées par Terraform. En voici un exemple :
-Terraform
+Le fichier `terraform.tfvars.example` permet de définir les variables utilisées par Terraform. En voici un exemple :
 
+```hcl
 # Configuration Proxmox
-proxmox_endpoint = "[https://192.168.100.100:8006/api2/json](https://192.168.100.100:8006/api2/json)"
+proxmox_endpoint = "https://192.168.100.100:8006/api2/json"
 proxmox_user     = "terraform@pme"
 proxmox_password = "CHANGEME"  # Remplacer par le vrai mot de passe
 
@@ -111,10 +104,12 @@ app_dir     = "/home/cytech_usr/app"
 db_name     = "cytech"
 db_user     = "cytech_usr"
 db_password = "CHANGEME"  # Remplacer par le vrai mot de passe
+```
 
-Technologies utilisées:
-    Terraform
-    Ansible
-    Proxmox
-    Python / Flask
-    PostgreSQL
+## Technologies utilisées
+
+- Terraform
+- Ansible
+- Proxmox
+- Python / Flask
+- PostgreSQL
