@@ -76,15 +76,14 @@ Le rôle APP :
 
 3. Test de l'application
 
-À la fin du déploiement, une requête HTTP est exécutée automatiquement via Ansible pour vérifier que L'application doit retourner la réponse suivante :   hello Alaa Boughammoura
-
+À la fin du déploiement, une requête HTTP est exécutée automatiquement via Ansible pour vérifier que l'application fonctionne. L'application doit retourner la réponse suivante : hello Alaa Boughammoura.
 Déploiement du projet
 
 Pour lancer l'environnement, placez-vous dans le dossier terraform et lancez les commandes :
 Bash
 
 terraform init
-terraform apply 
+terraform apply
 
 Une fois terminé, vous pourrez accéder à l'application depuis un navigateur :
 Plaintext
@@ -113,9 +112,14 @@ db_name     = "cytech"
 db_user     = "cytech_usr"
 db_password = "CHANGEME"  # Remplacer par le vrai mot de passe
 
-Technologies utilisées:
+Technologies utilisées
+
     Terraform
+
     Ansible
+
     Proxmox
+
     Python / Flask
+
     PostgreSQL
