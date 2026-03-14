@@ -96,7 +96,7 @@ Le fichier terraform.tfvars.example permet de définir les variables utilisées 
 Terraform
 
 # Configuration Proxmox
-proxmox_endpoint = "https://192.168.100.100:8006/api2/json"
+proxmox_endpoint = "[https://192.168.100.100:8006/api2/json](https://192.168.100.100:8006/api2/json)"
 proxmox_user     = "terraform@pme"
 proxmox_password = "CHANGEME"  # Remplacer par le vrai mot de passe
 
@@ -112,14 +112,9 @@ db_name     = "cytech"
 db_user     = "cytech_usr"
 db_password = "CHANGEME"  # Remplacer par le vrai mot de passe
 
-Technologies utilisées
-
+Technologies utilisées:
     Terraform
-
     Ansible
-
     Proxmox
-
     Python / Flask
-
     PostgreSQL
