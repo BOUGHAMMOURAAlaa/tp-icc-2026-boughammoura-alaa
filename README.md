@@ -24,6 +24,8 @@ Le projet est structuré en deux parties principales :
 ├── ansible/
 │   ├── ansible.cfg
 │   ├── playbook.yml
+│   ├── group_vars/
+│   │   └── main.yml
 │   └── roles/
 │       ├── app/
 │       └── bdd/
@@ -70,12 +72,23 @@ Une fois les machines créées, Ansible configure automatiquement les serveurs (
 
 ## Déploiement du projet
 
-Pour lancer l'environnement, placez-vous dans le dossier `terraform` et lancez les commandes :
+Le déploiement s'effectue en deux temps :
+
+**1. Création de l'infrastructure :**
+Placez-vous dans le dossier `terraform` et lancez les commandes :
 
 ```bash
 terraform init
 terraform apply
 ```
+
+**2. Configuration des serveurs :**
+Une fois les machines créées, placez-vous dans le dossier `ansible` et lancez le playbook :
+
+```bash
+ansible-playbook playbook.yml -i <votre_fichier_inventaire>
+```
+*(Remplacez `<votre_fichier_inventaire>` par le chemin vers votre fichier d'inventaire).*
 
 Une fois terminé, vous pourrez accéder à l'application depuis un navigateur :
 
@@ -89,7 +102,7 @@ Le fichier `terraform.tfvars.example` permet de définir les variables utilisée
 
 ```hcl
 # Configuration Proxmox
-proxmox_endpoint = "https://192.168.100.100:8006/api2/json"
+proxmox_endpoint = "[https://192.168.100.100:8006/api2/json](https://192.168.100.100:8006/api2/json)"
 proxmox_user     = "terraform@pme"
 proxmox_password = "CHANGEME"  # Remplacer par le vrai mot de passe
 

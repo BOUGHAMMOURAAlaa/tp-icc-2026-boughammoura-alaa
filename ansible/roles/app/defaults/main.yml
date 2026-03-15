@@ -1,3 +1,25 @@
 #SPDX-License-Identifier: MIT-0
 ---
 # defaults file for app
+
+# Configuration Python & Venv 
+app_pip_packages:
+  - flask
+  - psycopg2-binary  
+app_venv_dir: "{{ app_dir }}/venv"
+app_venv_command: "python3 -m venv"
+
+# Fichiers et Templates 
+app_template_src: "app.py.j2"
+app_file_dest: "{{ app_dir }}/app.py"
+
+# Configuration Systemd
+app_service_dest: "/etc/systemd/system/{{ app_name }}.service"
+app_service_description: "Flask Application {{ app_user }}"
+app_service_exec: "{{ app_venv_dir }}/bin/python {{ app_file_dest }}"
+
+# Tests et Réseau
+app_port: 8080
+app_wait_delay: 2
+app_wait_timeout: 15
+app_test_url: "http://127.0.0.1:{{ app_port }}/"

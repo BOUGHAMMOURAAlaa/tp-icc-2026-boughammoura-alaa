@@ -43,11 +43,10 @@ module "app" {
 resource "local_file" "ansible_inventory" {
   content = <<-EOT
     [app]
-    ${module.app.ip_address} ansible_user=alaa
+    ${split("/", module.app.ip_address)[0]} ansible_user=${var.vm_user}
     
     [bdd]
-    ${module.bdd.ip_address} ansible_user=alaa
-
+    ${split("/", module.bdd.ip_address)[0]} ansible_user=${var.vm_user}
     [all:vars]
     db_password=${var.db_password}
   EOT
@@ -63,6 +62,6 @@ resource "null_resource" "run_ansible" {
   ]
 
   provisioner "local-exec" {
-    command = "sleep 45 && cd ../ansible && ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.ini playbook.yml"
+    command = "sleep 90 && cd ../ansible && ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.ini playbook.yml"
   }
 }

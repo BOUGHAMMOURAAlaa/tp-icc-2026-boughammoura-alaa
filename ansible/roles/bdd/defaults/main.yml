@@ -1,3 +1,24 @@
-#SPDX-License-Identifier: MIT-0
 ---
-# defaults file for bdd
+# Configuration Système interne à la BDD 
+pg_service_name: postgresql
+pg_system_user: postgres
+
+# Configuration interne PostgreSQL 
+db_group_flags: NOLOGIN
+
+# Requêtes SQL d'initialisation 
+db_init_queries:
+  - "CREATE TABLE IF NOT EXISTS cytech_usr (id SERIAL PRIMARY KEY, name VARCHAR(100))"
+  - "ALTER TABLE cytech_usr OWNER TO {{ db_user }}"
+  - "TRUNCATE TABLE cytech_usr"
+  - "INSERT INTO cytech_usr (name) VALUES ('Alaa Boughammoura')"
+
+# Fichiers de configuration réseau PostgreSQL 
+pg_conf_dest: "/etc/postgresql/{{ pg_version }}/main/postgresql.conf"
+pg_listen_addresses: "*"
+
+# Fichier de sécurité (pg_hba.conf) 
+pg_hba_conf_dest: "/etc/postgresql/{{ pg_version }}/main/pg_hba.conf"
+pg_hba_local_source: "127.0.0.1/32"
+pg_hba_app_source: "{{ groups['app'][0] }}/32"
+pg_hba_method: "md5"
