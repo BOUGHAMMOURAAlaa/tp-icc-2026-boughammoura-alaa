@@ -28,5 +28,5 @@ variable "app_vm_id" { type = number }
 variable "db_password" {
   description = "Mot de passe de la base de données PostgreSQL"
   type        = string
-  sensitive   = true 
+  sensitive   = true
 }
